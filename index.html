@@ -289,6 +289,25 @@
                     <option value="15">15 segundos</option>
                 </select>
             </div>
+
+            <div class="config-group">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" id="ttsEnabled" checked>
+                    <span>🔊 Pronunciar números (TTS)</span>
+                </label>
+            </div>
+
+            <div class="config-group" id="ttsGroup" style="display: none;">
+                <label for="ttsVoice">Voz:</label>
+                <select id="ttsVoice">
+                    <option value="">Voz por defecto del sistema</option>
+                </select>
+            </div>
+
+            <div class="config-group" id="ttsSpeedGroup" style="display: none;">
+                <label for="ttsSpeed">Velocidad: <span id="speedValue">1</span>x</label>
+                <input type="range" id="ttsSpeed" min="0.5" max="2" step="0.1" value="1" style="cursor: pointer;">
+            </div>
         </div>
 
         <div class="button-group">
@@ -334,6 +353,9 @@
         let autoMode = false;
         let autoInterval = null;
         let autoSpeed = 0;
+        let ttsEnabled = true;
+        let ttsVoice = null;
+        let ttsSpeed = 1;
 
         // Cambiar máximo personalizado
         document.getElementById('maxBalls').addEventListener('change', function(e) {
@@ -361,6 +383,55 @@
             if (autoMode && autoSpeed > 0) {
                 pararAuto();
                 iniciarAuto();
+            }
+        });
+
+        // Controlar TTS
+        document.getElementById('ttsEnabled').addEventListener('change', function(e) {
+            ttsEnabled = e.target.checked;
+            document.getElementById('ttsGroup').style.display = ttsEnabled ? 'block' : 'none';
+            document.getElementById('ttsSpeedGroup').style.display = ttsEnabled ? 'block' : 'none';
+        });
+
+        document.getElementById('ttsSpeed').addEventListener('change', function(e) {
+            ttsSpeed = parseFloat(e.target.value);
+            document.getElementById('speedValue').textContent = ttsSpeed.toFixed(1);
+        });
+
+        // Llenar voces disponibles
+        function cargarVoces() {
+            const voiceSelect = document.getElementById('ttsVoice');
+            const voices = speechSynthesis.getVoices();
+            
+            voiceSelect.innerHTML = '<option value="">Voz por defecto del sistema</option>';
+            
+            // Priorizar voces en español
+            const voicesEsp = voices.filter(v => v.lang.startsWith('es'));
+            const voicesOtras = voices.filter(v => !v.lang.startsWith('es'));
+            
+            voicesEsp.forEach((voice, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.text = voice.name + ' (' + voice.lang + ')';
+                voiceSelect.appendChild(option);
+            });
+            
+            if (voicesEsp.length > 0) {
+                voiceSelect.value = 0;
+                ttsVoice = voicesEsp[0];
+            }
+        }
+
+        // Cargar voces cuando estén disponibles
+        speechSynthesis.onvoiceschanged = cargarVoces;
+        cargarVoces();
+
+        document.getElementById('ttsVoice').addEventListener('change', function(e) {
+            if (e.target.value === '') {
+                ttsVoice = null;
+            } else {
+                const voices = speechSynthesis.getVoices();
+                ttsVoice = voices[parseInt(e.target.value)];
             }
         });
 
@@ -429,6 +500,11 @@
             actualizarHistorial();
             actualizarStats();
             reproducirSonido();
+            
+            // Pronunciar número si TTS está habilitado
+            if (ttsEnabled) {
+                pronunciarNumero(numero);
+            }
         }
 
         function reiniciar() {
@@ -529,6 +605,23 @@
             } catch (e) {
                 // Si no funciona el audio, silenciosamente continuar
             }
+        }
+
+        function pronunciarNumero(numero) {
+            // Detener cualquier habla anterior
+            speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(numero.toString());
+            utterance.lang = 'es-ES';
+            utterance.rate = ttsSpeed;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            
+            if (ttsVoice) {
+                utterance.voice = ttsVoice;
+            }
+            
+            speechSynthesis.speak(utterance);
         }
 
         // Permitir Enter para siguiente número
