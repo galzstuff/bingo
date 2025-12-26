@@ -26,9 +26,23 @@
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
+            max-width: 1200px;
             width: 100%;
             padding: 40px;
+            display: flex;
+            gap: 40px;
+        }
+
+        .left-panel {
+            flex: 0 0 35%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         h1 {
@@ -36,6 +50,13 @@
             color: #667eea;
             margin-bottom: 30px;
             font-size: 2.5em;
+            grid-column: 1 / -1;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
         }
 
         .config-section {
@@ -79,6 +100,7 @@
             gap: 10px;
             margin-bottom: 30px;
             flex-wrap: wrap;
+            margin-top: auto;
         }
 
         button {
@@ -151,6 +173,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 15px;
             color: white;
+            order: -2;
         }
 
         .current-label {
@@ -238,10 +261,22 @@
         @media (max-width: 480px) {
             .container {
                 padding: 20px;
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .left-panel {
+                flex: 1;
+            }
+
+            .right-panel {
+                flex: 1;
             }
 
             h1 {
                 font-size: 1.8em;
+                position: static;
+                margin-bottom: 20px;
             }
 
             .current-number {
@@ -262,87 +297,91 @@
     <div class="container">
         <h1>🎯 BINGO</h1>
 
-        <div class="config-section">
-            <div class="config-group">
-                <label for="maxBalls">Cantidad de bolas:</label>
-                <select id="maxBalls">
-                    <option value="75">75 bolas (Bingo Norteamericano)</option>
-                    <option value="90" selected>90 bolas (Bingo Español)</option>
-                    <option value="100">100 bolas</option>
-                    <option value="custom">Personalizado</option>
-                </select>
+        <div class="left-panel">
+            <div class="config-section">
+                <div class="config-group">
+                    <label for="maxBalls">Cantidad de bolas:</label>
+                    <select id="maxBalls">
+                        <option value="75">75 bolas (Bingo Norteamericano)</option>
+                        <option value="90" selected>90 bolas (Bingo Español)</option>
+                        <option value="100">100 bolas</option>
+                        <option value="custom">Personalizado</option>
+                    </select>
+                </div>
+
+                <div class="config-group" id="customGroup" style="display: none;">
+                    <label for="customNumber">Número máximo:</label>
+                    <input type="number" id="customNumber" min="1" max="1000" value="90">
+                </div>
+
+                <div class="config-group">
+                    <label for="autoInterval">Intervalo automático (segundos):</label>
+                    <select id="autoInterval">
+                        <option value="0" selected>Manual</option>
+                        <option value="2">2 segundos</option>
+                        <option value="3">3 segundos</option>
+                        <option value="4">4 segundos</option>
+                        <option value="5">5 segundos</option>
+                        <option value="10">10 segundos</option>
+                        <option value="15">15 segundos</option>
+                    </select>
+                </div>
+
+                <div class="config-group" id="ttsCheckboxGroup">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="ttsEnabled" checked>
+                        <span>🔊 Pronunciar números (TTS)</span>
+                        <span id="ttsSupport" style="font-size: 12px; color: #999;"></span>
+                    </label>
+                </div>
+
+                <div class="config-group" id="ttsGroup" style="display: none;">
+                    <label for="ttsVoice">Voz:</label>
+                    <select id="ttsVoice">
+                        <option value="">Voz por defecto del sistema</option>
+                    </select>
+                </div>
+
+                <div class="config-group" id="ttsSpeedGroup" style="display: none;">
+                    <label for="ttsSpeed">Velocidad: <span id="speedValue">1</span>x</label>
+                    <input type="range" id="ttsSpeed" min="0.5" max="2" step="0.1" value="1" style="cursor: pointer;">
+                </div>
             </div>
 
-            <div class="config-group" id="customGroup" style="display: none;">
-                <label for="customNumber">Número máximo:</label>
-                <input type="number" id="customNumber" min="1" max="1000" value="90">
-            </div>
-
-            <div class="config-group">
-                <label for="autoInterval">Intervalo automático (segundos):</label>
-                <select id="autoInterval">
-                    <option value="0" selected>Manual</option>
-                    <option value="2">2 segundos</option>
-                    <option value="3">3 segundos</option>
-                    <option value="4">4 segundos</option>
-                    <option value="5">5 segundos</option>
-                    <option value="10">10 segundos</option>
-                    <option value="15">15 segundos</option>
-                </select>
-            </div>
-
-            <div class="config-group" id="ttsCheckboxGroup">
-                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                    <input type="checkbox" id="ttsEnabled" checked>
-                    <span>🔊 Pronunciar números (TTS)</span>
-                    <span id="ttsSupport" style="font-size: 12px; color: #999;"></span>
-                </label>
-            </div>
-
-            <div class="config-group" id="ttsGroup" style="display: none;">
-                <label for="ttsVoice">Voz:</label>
-                <select id="ttsVoice">
-                    <option value="">Voz por defecto del sistema</option>
-                </select>
-            </div>
-
-            <div class="config-group" id="ttsSpeedGroup" style="display: none;">
-                <label for="ttsSpeed">Velocidad: <span id="speedValue">1</span>x</label>
-                <input type="range" id="ttsSpeed" min="0.5" max="2" step="0.1" value="1" style="cursor: pointer;">
-            </div>
-        </div>
-
-        <div class="button-group">
-            <button class="btn-primary" id="startBtn" onclick="iniciar()">Iniciar</button>
-            <button class="btn-success" id="nextBtn" onclick="siguienteNumero()" disabled>Siguiente</button>
-            <button class="btn-secondary" id="autoBtn" onclick="toggleAuto()" disabled style="display: none;">Detener Auto</button>
-            <button class="btn-secondary" id="resetBtn" onclick="reiniciar()">Reiniciar</button>
-        </div>
-
-        <div class="display-section">
-            <div class="current-label">Número actual:</div>
-            <div class="current-number" id="currentNumber">-</div>
-        </div>
-
-        <div class="stats">
-            <div class="stat-item">
-                <div class="stat-label">Bolas cantadas</div>
-                <div class="stat-value" id="countCalled">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">Bolas restantes</div>
-                <div class="stat-value" id="countRemaining">90</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">Progreso</div>
-                <div class="stat-value" id="percentage">0%</div>
+            <div class="button-group">
+                <button class="btn-primary" id="startBtn" onclick="iniciar()">Iniciar</button>
+                <button class="btn-success" id="nextBtn" onclick="siguienteNumero()" disabled>Siguiente</button>
+                <button class="btn-secondary" id="autoBtn" onclick="toggleAuto()" disabled style="display: none;">Detener Auto</button>
+                <button class="btn-secondary" id="resetBtn" onclick="reiniciar()">Reiniciar</button>
             </div>
         </div>
 
-        <div class="history-section">
-            <div class="history-title">Números cantados:</div>
-            <div class="history-numbers" id="historyNumbers">
-                <div class="empty-message">Aún no se ha cantado ningún número</div>
+        <div class="right-panel">
+            <div class="display-section">
+                <div class="current-label">Número actual:</div>
+                <div class="current-number" id="currentNumber">-</div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-label">Bolas cantadas</div>
+                    <div class="stat-value" id="countCalled">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Bolas restantes</div>
+                    <div class="stat-value" id="countRemaining">90</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Progreso</div>
+                    <div class="stat-value" id="percentage">0%</div>
+                </div>
+            </div>
+
+            <div class="history-section">
+                <div class="history-title">Números cantados:</div>
+                <div class="history-numbers" id="historyNumbers">
+                    <div class="empty-message">Aún no se ha cantado ningún número</div>
+                </div>
             </div>
         </div>
     </div>
