@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo - Cantar Números</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .config-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .config-group {
+            margin-bottom: 20px;
+        }
+
+        .config-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            flex: 1;
+            min-width: 100px;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-success {
+            background: #51cf66;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #40c057;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(81, 207, 102, 0.4);
+        }
+
+        .btn-success:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .display-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .current-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .current-number {
+            font-size: 4em;
+            font-weight: bold;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .history-section {
+            margin-top: 30px;
+        }
+
+        .history-title {
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .history-numbers {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 8px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            min-height: 50px;
+        }
+
+        .number-ball {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .empty-message {
+            color: #999;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #999;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .current-number {
+                font-size: 3em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 BINGO</h1>
+
+        <div class="config-section">
+            <div class="config-group">
+                <label for="maxBalls">Cantidad de bolas:</label>
+                <select id="maxBalls">
+                    <option value="75">75 bolas (Bingo Norteamericano)</option>
+                    <option value="90" selected>90 bolas (Bingo Español)</option>
+                    <option value="100">100 bolas</option>
+                    <option value="custom">Personalizado</option>
+                </select>
+            </div>
+
+            <div class="config-group" id="customGroup" style="display: none;">
+                <label for="customNumber">Número máximo:</label>
+                <input type="number" id="customNumber" min="1" max="1000" value="90">
+            </div>
+
+            <div class="config-group">
+                <label for="autoInterval">Intervalo automático (segundos):</label>
+                <select id="autoInterval">
+                    <option value="0" selected>Manual</option>
+                    <option value="2">2 segundos</option>
+                    <option value="3">3 segundos</option>
+                    <option value="4">4 segundos</option>
+                    <option value="5">5 segundos</option>
+                    <option value="10">10 segundos</option>
+                    <option value="15">15 segundos</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" id="startBtn" onclick="iniciar()">Iniciar</button>
+            <button class="btn-success" id="nextBtn" onclick="siguienteNumero()" disabled>Siguiente</button>
+            <button class="btn-secondary" id="autoBtn" onclick="toggleAuto()" disabled style="display: none;">Detener Auto</button>
+            <button class="btn-secondary" id="resetBtn" onclick="reiniciar()">Reiniciar</button>
+        </div>
+
+        <div class="display-section">
+            <div class="current-label">Número actual:</div>
+            <div class="current-number" id="currentNumber">-</div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-label">Bolas cantadas</div>
+                <div class="stat-value" id="countCalled">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Bolas restantes</div>
+                <div class="stat-value" id="countRemaining">90</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Progreso</div>
+                <div class="stat-value" id="percentage">0%</div>
+            </div>
+        </div>
+
+        <div class="history-section">
+            <div class="history-title">Números cantados:</div>
+            <div class="history-numbers" id="historyNumbers">
+                <div class="empty-message">Aún no se ha cantado ningún número</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let maxBalls = 90;
+        let ballsUsed = [];
+        let currentNumber = null;
+        let isRunning = false;
+        let autoMode = false;
+        let autoInterval = null;
+        let autoSpeed = 0;
+
+        // Cambiar máximo personalizado
+        document.getElementById('maxBalls').addEventListener('change', function(e) {
+            if (e.target.value === 'custom') {
+                document.getElementById('customGroup').style.display = 'block';
+                maxBalls = parseInt(document.getElementById('customNumber').value);
+            } else {
+                document.getElementById('customGroup').style.display = 'none';
+                maxBalls = parseInt(e.target.value);
+                reiniciar();
+            }
+            actualizarStats();
+        });
+
+        // Cambiar número personalizado
+        document.getElementById('customNumber').addEventListener('change', function(e) {
+            maxBalls = parseInt(e.target.value) || 90;
+            reiniciar();
+            actualizarStats();
+        });
+
+        // Cambiar intervalo automático
+        document.getElementById('autoInterval').addEventListener('change', function(e) {
+            autoSpeed = parseInt(e.target.value);
+            if (autoMode && autoSpeed > 0) {
+                pararAuto();
+                iniciarAuto();
+            }
+        });
+
+        function iniciar() {
+            if (ballsUsed.length === 0) {
+                siguienteNumero();
+            }
+            isRunning = true;
+            autoSpeed = parseInt(document.getElementById('autoInterval').value);
+            
+            // Si hay intervalo automático, iniciar modo auto
+            if (autoSpeed > 0) {
+                iniciarAuto();
+            }
+            
+            actualizarBotones();
+        }
+
+        function iniciarAuto() {
+            autoMode = true;
+            autoInterval = setInterval(() => {
+                siguienteNumero();
+            }, autoSpeed * 1000);
+            actualizarBotones();
+        }
+
+        function pararAuto() {
+            if (autoInterval !== null) {
+                clearInterval(autoInterval);
+                autoInterval = null;
+            }
+            autoMode = false;
+            actualizarBotones();
+        }
+
+        function toggleAuto() {
+            if (autoMode) {
+                pararAuto();
+            } else {
+                autoSpeed = parseInt(document.getElementById('autoInterval').value);
+                if (autoSpeed > 0) {
+                    iniciarAuto();
+                }
+            }
+        }
+
+        function siguienteNumero() {
+            if (ballsUsed.length >= maxBalls) {
+                pararAuto();
+                alert('¡Se han cantado todos los números!');
+                isRunning = false;
+                actualizarBotones();
+                return;
+            }
+
+            let numero;
+            do {
+                numero = Math.floor(Math.random() * maxBalls) + 1;
+            } while (ballsUsed.includes(numero));
+
+            ballsUsed.push(numero);
+            currentNumber = numero;
+
+            // Actualizar pantalla
+            document.getElementById('currentNumber').textContent = numero;
+            actualizarHistorial();
+            actualizarStats();
+            reproducirSonido();
+        }
+
+        function reiniciar() {
+            pararAuto();
+            ballsUsed = [];
+            currentNumber = null;
+            isRunning = false;
+            autoMode = false;
+            document.getElementById('currentNumber').textContent = '-';
+            document.getElementById('historyNumbers').innerHTML = '<div class="empty-message">Aún no se ha cantado ningún número</div>';
+            actualizarStats();
+            actualizarBotones();
+        }
+
+        function actualizarHistorial() {
+            const historyDiv = document.getElementById('historyNumbers');
+            historyDiv.innerHTML = '';
+
+            // Ordenar los números para mostrar
+            const sortedBalls = [...ballsUsed].sort((a, b) => a - b);
+
+            sortedBalls.forEach(numero => {
+                const ball = document.createElement('div');
+                ball.className = 'number-ball';
+                ball.textContent = numero;
+                historyDiv.appendChild(ball);
+            });
+        }
+
+        function actualizarStats() {
+            const cantidadCantada = ballsUsed.length;
+            const cantidadRestante = maxBalls - cantidadCantada;
+            const porcentaje = Math.round((cantidadCantada / maxBalls) * 100);
+
+            document.getElementById('countCalled').textContent = cantidadCantada;
+            document.getElementById('countRemaining').textContent = cantidadRestante;
+            document.getElementById('percentage').textContent = porcentaje + '%';
+        }
+
+        function actualizarBotones() {
+            const startBtn = document.getElementById('startBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const autoBtn = document.getElementById('autoBtn');
+            const autoIntervalSelect = document.getElementById('autoInterval');
+
+            if (isRunning || ballsUsed.length > 0) {
+                startBtn.disabled = true;
+                nextBtn.disabled = autoMode; // Deshabilitar si está en modo auto
+                
+                // Mostrar botón auto solo si hay intervalo seleccionado y no está en auto
+                if (autoSpeed > 0) {
+                    autoBtn.style.display = 'flex';
+                    if (autoMode) {
+                        autoBtn.textContent = 'Detener Auto';
+                        autoBtn.classList.remove('btn-secondary');
+                        autoBtn.classList.add('btn-secondary');
+                    } else {
+                        autoBtn.textContent = 'Iniciar Auto';
+                        autoBtn.disabled = false;
+                    }
+                    autoBtn.disabled = ballsUsed.length >= maxBalls;
+                } else {
+                    autoBtn.style.display = 'none';
+                }
+
+                autoIntervalSelect.disabled = autoMode; // No cambiar intervalo durante auto
+            } else {
+                startBtn.disabled = false;
+                nextBtn.disabled = true;
+                autoBtn.style.display = 'none';
+                autoIntervalSelect.disabled = false;
+            }
+
+            if (ballsUsed.length >= maxBalls) {
+                nextBtn.disabled = true;
+                autoBtn.disabled = true;
+            }
+        }
+
+        function reproducirSonido() {
+            // Crear un sonido simple usando Web Audio API
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (e) {
+                // Si no funciona el audio, silenciosamente continuar
+            }
+        }
+
+        // Permitir Enter para siguiente número
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !document.getElementById('nextBtn').disabled) {
+                siguienteNumero();
+            }
+        });
+
+        // Inicialización
+        actualizarStats();
+        actualizarBotones();
+    </script>
+</body>
+</html>
