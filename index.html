@@ -316,15 +316,8 @@
 
                 <div class="config-group">
                     <label for="autoInterval">Intervalo automático (segundos):</label>
-                    <select id="autoInterval">
-                        <option value="0" selected>Manual</option>
-                        <option value="2">2 segundos</option>
-                        <option value="3">3 segundos</option>
-                        <option value="4">4 segundos</option>
-                        <option value="5">5 segundos</option>
-                        <option value="10">10 segundos</option>
-                        <option value="15">15 segundos</option>
-                    </select>
+                    <input type="number" id="autoInterval" min="0.5" max="300" step="0.5" value="0" style="font-size: 16px;">
+                    <small style="color: #999; margin-top: 5px; display: block;">0 = Manual</small>
                 </div>
 
                 <div class="config-group" id="ttsCheckboxGroup">
